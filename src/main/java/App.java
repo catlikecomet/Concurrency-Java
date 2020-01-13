@@ -15,7 +15,7 @@ public class App {
             Counter counterB = new Counter();
 
             CompletableFuture<Void> increment1 = CompletableFuture.runAsync(counterA::increment, pool);
-            CompletableFuture<Void> increment2 = CompletableFuture.runAsync(counterB::increment, pool);
+            CompletableFuture<Void> increment2 = CompletableFuture.runAsync(counterA::increment, pool);
 
             CompletableFuture<Void> all = CompletableFuture.<Integer>allOf(increment1, increment2);
             all.thenApply((v) -> {
@@ -43,12 +43,12 @@ public class App {
     }
 
     public static class Counter {
-        private volatile int val = 0;
+        private AtomicInteger val = new AtomicInteger(0);
 
-        public synchronized void increment() { val += 1; }
+        public synchronized void increment() { val.incrementAndGet(); }
 
         public synchronized int get() {
-            return val;
+            return val.get();
         }
     }
 }
